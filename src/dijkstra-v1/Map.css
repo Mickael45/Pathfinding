@@ -1,0 +1,68 @@
+.square {
+  display: block;
+  height: 30px;
+  width: 30px;
+  border: 1px solid #a0a0a0;
+}
+
+.start {
+  background: red;
+}
+
+.target {
+  background: green;
+}
+
+.adjascent {
+  animation-name: color_change;
+  animation-duration: 1s;
+  animation-direction: alternate;
+  background: black;
+}
+
+.path {
+  background: blue;
+}
+
+@-webkit-keyframes color_change {
+  from {
+    background-color: white;
+    scale: 1.2;
+  }
+  to {
+    background-color: black;
+    scale: 1;
+  }
+}
+@-moz-keyframes color_change {
+  from {
+    background-color: white;
+  }
+  to {
+    background-color: black;
+  }
+}
+@-ms-keyframes color_change {
+  from {
+    background-color: white;
+  }
+  to {
+    background-color: black;
+  }
+}
+@-o-keyframes color_change {
+  from {
+    background-color: white;
+  }
+  to {
+    background-color: black;
+  }
+}
+@keyframes color_change {
+  from {
+    background-color: white;
+  }
+  to {
+    background-color: black;
+  }
+}
