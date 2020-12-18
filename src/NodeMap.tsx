@@ -30,11 +30,18 @@ const doesStartNodeExist = () => document.getElementById(START_NODE_ID);
 
 const doesEndNodeExist = () => document.getElementById(END_NODE_ID);
 
+const isNodeEmpty = (node: DataSetElement) => (node.style.backgroundColor = "white");
+
 const handleNodeClick = (e: MouseEvent<DataSetElement>) => {
+  if (!isNodeEmpty(e.target as DataSetElement)) {
+    return;
+  }
   if (!doesStartNodeExist()) {
     return setNodeAsStart(e);
+  } else if (!doesEndNodeExist()) {
+    return setNodeAsEnd(e);
   }
-  return doesEndNodeExist() ? setNodeAsWall(e) : setNodeAsEnd(e);
+  return setNodeAsWall(e);
 };
 
 const createNode = (index: number) => <div className="square" onClick={handleNodeClick} data-index={index} />;
