@@ -5,33 +5,19 @@
   border: 1px solid #a0a0a0;
 }
 
-.start {
-  background: red;
-}
-
-.target {
-  background: green;
-}
-
-.adjascent {
+.visited {
   animation-name: color_change;
   animation-duration: 1s;
   animation-direction: alternate;
-  background: black;
-}
-
-.path {
-  background: blue;
+  background-color: yellow;
 }
 
 @-webkit-keyframes color_change {
   from {
     background-color: white;
-    scale: 1.2;
   }
   to {
-    background-color: black;
-    scale: 1;
+    background-color: yellow;
   }
 }
 @-moz-keyframes color_change {
@@ -39,7 +25,7 @@
     background-color: white;
   }
   to {
-    background-color: black;
+    background-color: yellow;
   }
 }
 @-ms-keyframes color_change {
@@ -47,7 +33,7 @@
     background-color: white;
   }
   to {
-    background-color: black;
+    background-color: yellow;
   }
 }
 @-o-keyframes color_change {
@@ -55,7 +41,7 @@
     background-color: white;
   }
   to {
-    background-color: black;
+    background-color: yellow;
   }
 }
 @keyframes color_change {
@@ -63,6 +49,6 @@
     background-color: white;
   }
   to {
-    background-color: black;
+    background-color: yellow;
   }
 }
