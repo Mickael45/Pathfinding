@@ -98,7 +98,7 @@ const wasEndNodeReached = () => {
 };
 
 const isFromIndexValid = (node: DataSetElement | null) =>
-  node && node.dataset && node.dataset.from && parseInt(node.dataset.from, 10) > 0;
+  node && node.dataset && node.dataset.from && parseInt(node.dataset.from, 10) >= 0;
 
 const getEndNodeFromIndex = () => {
   const endNode = document.getElementById(END_NODE_ID) as DataSetElement;
@@ -110,7 +110,7 @@ const getEndNodeFromIndex = () => {
   return parseInt(endNode.dataset.from, 10);
 };
 
-const colorFromNodeIndexRecursively = (nodeIndex: number = getEndNodeFromIndex()) => {
+const colorFromNodeIndexRecursively = (nodeIndex: number) => {
   const node = getNodeByIndex(nodeIndex);
 
   if (!node || !isFromIndexValid(node)) {
@@ -118,7 +118,7 @@ const colorFromNodeIndexRecursively = (nodeIndex: number = getEndNodeFromIndex()
   }
   console.log("COLORING", node.dataset.weight);
   node.style.backgroundColor = PATH_COLOR;
-  setTimeout(() => colorFromNodeIndexRecursively(parseInt(node.dataset.from, 10)), 1);
+  setTimeout(() => colorFromNodeIndexRecursively(parseInt(node.dataset.from, 10)));
 };
 
 const setUpStartNode = () => {
@@ -157,7 +157,7 @@ const weighNeighborsRecursively = (nodes: NodeListOf<DataSetElement> = getAllNon
       weighNeighborsRecursively();
     }, 1);
   } else {
-    colorFromNodeIndexRecursively();
+    colorFromNodeIndexRecursively(getEndNodeFromIndex());
   }
 };
 
