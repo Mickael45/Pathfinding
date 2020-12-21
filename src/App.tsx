@@ -1,18 +1,24 @@
 import { useEffect, useState } from "react";
-import { createNodes, putRandomWalls } from "./NodeMap";
+import { createNodes, createRandomWalls, resetNodes } from "./NodeMap";
 import createEventListenerManager from "./EventListenersManager";
-import run from "./dijkstra";
+import runDijkstra from "./dijkstra";
+import runFlood from "./flood";
 import "./App.css";
 
 const { addEventListeners, removeEventListeners } = createEventListenerManager();
 
-const onClick = () => {
+const onFloodClick = () => {
   removeEventListeners();
-  run();
+  runFlood();
+};
+
+const onDijkstraClick = () => {
+  removeEventListeners();
+  runDijkstra();
 };
 
 const App = () => {
-  const [nodes] = useState<JSX.Element>(createNodes());
+  const [nodes] = useState<JSX.Element[]>(createNodes());
 
   useEffect(() => {
     if (nodes) {
@@ -21,10 +27,19 @@ const App = () => {
     }
   }, []);
 
+  const resetMap = () => {
+    resetNodes();
+    addEventListeners();
+  };
+
   return (
     <>
-      <div className="App">{nodes}</div>
-      <button onClick={onClick}>Run algorithm</button>
+      <div className="App">
+        <div>{nodes}</div>
+      </div>
+      <button onClick={onFloodClick}>Run flood algorithm</button>
+      <button onClick={onDijkstraClick}>Run dijkstra algorithm</button>
+      <button onClick={resetMap}>Reset Map</button>
     </>
   );
 };

@@ -18,6 +18,7 @@ const setNodeAsEnd = (node: MouseEvent) => {
 };
 
 const setNodeAsWall = (node: MouseEvent | MouseEvent) => {
+  (node.target as DataSetElement).id = "";
   (node.target as DataSetElement).style.backgroundColor = WALL_COLOR;
 };
 
@@ -46,34 +47,35 @@ const createEventListenerManager = () => {
   const isMouseDown = () => mouseState === DOWN_STATE;
 
   const onMouseDown = () => (mouseState = DOWN_STATE);
+
   const onMouseUp = () => (mouseState = UP_STATE);
 
   const onMouseOver = (e: MouseEvent) => {
-    if (isMouseDown() && (e.target as DataSetElement).dataset.index) {
+    if (isMouseDown()) {
       setNodeAsWall(e);
     }
   };
 
   const addEventListeners = () => {
-    window.addEventListener("mousedown", onMouseDown);
-    window.addEventListener("mouseup", onMouseUp);
-    window.addEventListener("mouseover", onMouseOver);
-
     const nodes = getAllNodes();
 
     nodes.forEach((node) => {
+      node.addEventListener("mousedown", onMouseDown);
+      node.addEventListener("mouseup", onMouseUp);
+      node.addEventListener("mouseover", onMouseOver);
+      node.addEventListener("mousemove", onMouseOver);
       node.addEventListener("click", onMouseClick);
     });
   };
 
   const removeEventListeners = () => {
-    window.removeEventListener("mousedown", onMouseDown);
-    window.removeEventListener("mouseup", onMouseUp);
-    window.addEventListener("mouseover", onMouseOver);
-
     const nodes = getAllNodes();
 
     nodes.forEach((node) => {
+      node.removeEventListener("mousedown", onMouseDown);
+      node.removeEventListener("mouseup", onMouseUp);
+      node.removeEventListener("mouseover", onMouseOver);
+      node.removeEventListener("mousemove", onMouseOver);
       node.removeEventListener("click", onMouseClick);
     });
   };

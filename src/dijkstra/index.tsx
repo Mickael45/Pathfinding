@@ -64,7 +64,7 @@ const setNodeWeight = (
   }
 
   const nodeNewWeight = distanceFromVisitedNode + visitedNodeWeight;
-  const nodeCurrentWeight = parseInt(node.dataset.weight, 10);
+  const nodeCurrentWeight = parseInt(node.dataset.weight || "-1", 10);
 
   if (
     wasNodeVisited(node) ||
@@ -107,7 +107,7 @@ const getEndNodeFromIndex = () => {
     return -1;
   }
 
-  return parseInt(endNode.dataset.from, 10);
+  return parseInt(endNode.dataset.from || "-1", 10);
 };
 
 const colorFromNodeIndexRecursively = (nodeIndex: number) => {
@@ -117,7 +117,7 @@ const colorFromNodeIndexRecursively = (nodeIndex: number) => {
     return;
   }
   node.style.backgroundColor = PATH_COLOR;
-  colorFromNodeIndexRecursively(parseInt(node.dataset.from, 10));
+  colorFromNodeIndexRecursively(parseInt(node.dataset.from || "-1", 10));
 };
 
 const setUpStartNode = () => {
@@ -138,21 +138,21 @@ const setUpEndNode = () => {
 };
 
 const getLighterNonVisitedNodes = () => {
-  const nonVisitedNodes = getAllNonVisitedNodes()
+  const nonVisitedNodes = getAllNonVisitedNodes();
 
   if (!nonVisitedNodes) {
-    return null
+    return null;
   }
 
-  let lighterNode: DataSetElement | null = null
+  let lighterNode: DataSetElement | null = null;
 
-  nonVisitedNodes.forEach(node => {
-    if (!lighterNode || parseInt(node.dataset.weight, 10) < parseInt(lighterNode.dataset.weight, 10)) {
-      lighterNode = node
+  nonVisitedNodes.forEach((node) => {
+    if (!lighterNode || parseInt(node.dataset.weight || "-1", 10) < parseInt(lighterNode.dataset.weight || "-1", 10)) {
+      lighterNode = node;
     }
-  })
+  });
 
-  return lighterNode
+  return lighterNode;
 };
 
 const weighNeighborsRecursively = (node: DataSetElement | null = getLighterNonVisitedNodes()) => {
@@ -161,12 +161,12 @@ const weighNeighborsRecursively = (node: DataSetElement | null = getLighterNonVi
   }
 
   const distanceFromVisitedNode = 1;
-    const {
-      dataset: { weight, index },
-    } = node;
+  const {
+    dataset: { weight = "-1", index },
+  } = node;
 
-    setWeightToDirectNeighbors(parseInt(index, 10), parseInt(weight, 10), distanceFromVisitedNode);
-    setNodeAsVisited(node);
+  setWeightToDirectNeighbors(parseInt(index, 10), parseInt(weight, 10), distanceFromVisitedNode);
+  setNodeAsVisited(node);
   if (!wasEndNodeReached()) {
     setTimeout(() => {
       weighNeighborsRecursively();
