@@ -116,9 +116,8 @@ const colorFromNodeIndexRecursively = (nodeIndex: number) => {
   if (!node || !isFromIndexValid(node)) {
     return;
   }
-  console.log("COLORING", node.dataset.weight);
   node.style.backgroundColor = PATH_COLOR;
-  setTimeout(() => colorFromNodeIndexRecursively(parseInt(node.dataset.from, 10)));
+  colorFromNodeIndexRecursively(parseInt(node.dataset.from, 10));
 };
 
 const setUpStartNode = () => {
@@ -138,24 +137,40 @@ const setUpEndNode = () => {
   }
 };
 
-const weighNeighborsRecursively = (nodes: NodeListOf<DataSetElement> = getAllNonVisitedNodes()) => {
-  if (!nodes || nodes.length === 0) {
+const getLighterNonVisitedNodes = () => {
+  const nonVisitedNodes = getAllNonVisitedNodes()
+
+  if (!nonVisitedNodes) {
+    return null
+  }
+
+  let lighterNode: DataSetElement | null = null
+
+  nonVisitedNodes.forEach(node => {
+    if (!lighterNode || parseInt(node.dataset.weight, 10) < parseInt(lighterNode.dataset.weight, 10)) {
+      lighterNode = node
+    }
+  })
+
+  return lighterNode
+};
+
+const weighNeighborsRecursively = (node: DataSetElement | null = getLighterNonVisitedNodes()) => {
+  if (!node) {
     return;
   }
 
-  nodes.forEach((node) => {
-    const distanceFromVisitedNode = 1;
+  const distanceFromVisitedNode = 1;
     const {
       dataset: { weight, index },
     } = node;
 
     setWeightToDirectNeighbors(parseInt(index, 10), parseInt(weight, 10), distanceFromVisitedNode);
     setNodeAsVisited(node);
-  });
   if (!wasEndNodeReached()) {
     setTimeout(() => {
       weighNeighborsRecursively();
-    }, 1);
+    }, 0);
   } else {
     colorFromNodeIndexRecursively(getEndNodeFromIndex());
   }
