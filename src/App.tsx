@@ -12,12 +12,12 @@ const onClick = () => {
 };
 
 const App = () => {
-  const [nodes] = useState<JSX.Element[]>(createNodes());
+  const [nodes] = useState<JSX.Element>(createNodes());
 
   useEffect(() => {
-    if (nodes && nodes.length > 0) {
+    if (nodes) {
       addEventListeners();
-      putRandomWalls();
+      // putRandomWalls();
     }
   }, []);
 

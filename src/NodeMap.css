@@ -1,7 +1,17 @@
+.container {
+  display: grid;
+  width: 75%;
+  justify-self: center;
+  grid-template-columns: repeat(75, auto);
+  grid-gap: 4px;
+}
+
 .square {
   display: block;
-  height: 30px;
-  width: 30px;
+  height: 15px;
+  width: 15px;
+  text-align: center;
+  font-size: 7px;
   border: 1px solid #a0a0a0;
 }
 

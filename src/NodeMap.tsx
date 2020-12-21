@@ -10,7 +10,7 @@ export const putRandomWalls = () => {
   const numberOfWalls = 900;
   const randomIndexes = [];
   while (randomIndexes.length < numberOfWalls) {
-    var r = Math.floor(Math.random() * NUMBER_OF_COLUMNS * NUMBER_OF_ROWS) + 1;
+    var r = Math.floor(Math.random() * NUMBER_OF_COLUMNS * NUMBER_OF_ROWS);
     if (randomIndexes.indexOf(r) === -1) {
       randomIndexes.push(r);
     }
@@ -26,5 +26,5 @@ export const createNodes = () => {
   for (let i = 0; i < nodesAmount; i++) {
     nodes.push(createNode(i));
   }
-  return nodes;
+  return <div className="container">{nodes}</div>;
 };
