@@ -180,6 +180,7 @@ const run = () => {
   setUpStartNode();
   setUpEndNode();
   weighNeighborsRecursively();
+  return true;
 };
 
 export default run;
