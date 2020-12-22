@@ -75,11 +75,11 @@ const createNode = (index: number) => (
   />
 );
 
-const createRandomIndexArray = (arrayLength: number) => {
+const createRandomIndexArray = (arrayLength: number, maxValue: number) => {
   const indexArray = [];
 
   while (indexArray.length < arrayLength) {
-    const r = Math.floor(Math.random() * NUMBER_OF_COLUMNS * NUMBER_OF_ROWS);
+    const r = Math.floor(Math.random() * maxValue);
 
     if (indexArray.indexOf(r) === -1) {
       indexArray.push(r);
@@ -88,45 +88,81 @@ const createRandomIndexArray = (arrayLength: number) => {
   return indexArray;
 };
 
-const createLeftBorder = (nodes: NodeListOf<DataSetElement>) => {
+const createLeftBorder = (nodes: NodeListOf<DataSetElement>, createNodeOfType: string) => {
+  let emptyNodeRowIndex = -1;
+
+  if (createNodeOfType !== "") {
+    emptyNodeRowIndex = 1 + Math.floor(Math.random() * (NUMBER_OF_ROWS - 2));
+  }
+
   for (let row = 0; row < NUMBER_OF_ROWS; row++) {
-    (nodes[row * NUMBER_OF_COLUMNS] as HTMLElement).style.backgroundColor = WALL_COLOR;
+    if (emptyNodeRowIndex !== row) {
+      (nodes[row * NUMBER_OF_COLUMNS] as HTMLElement).style.backgroundColor = WALL_COLOR;
+    }
   }
 };
 
-const createRightBorder = (nodes: NodeListOf<DataSetElement>) => {
+const createRightBorder = (nodes: NodeListOf<DataSetElement>, createNodeOfType: string) => {
+  let emptyNodeRowIndex = -1;
+
+  if (createNodeOfType !== "") {
+    emptyNodeRowIndex = 1 + Math.floor(Math.random() * (NUMBER_OF_ROWS - 2));
+  }
   for (let row = 0; row < NUMBER_OF_ROWS; row++) {
-    (nodes[row * NUMBER_OF_COLUMNS + NUMBER_OF_COLUMNS - 1] as HTMLElement).style.backgroundColor = WALL_COLOR;
+    if (emptyNodeRowIndex !== row) {
+      (nodes[row * NUMBER_OF_COLUMNS + NUMBER_OF_COLUMNS - 1] as HTMLElement).style.backgroundColor = WALL_COLOR;
+    }
   }
 };
 
-const createTopBorder = (nodes: NodeListOf<DataSetElement>) => {
+const createTopBorder = (nodes: NodeListOf<DataSetElement>, createNodeOfType: string) => {
+  let emptyNodeRowIndex = -1;
+
+  if (createNodeOfType !== "") {
+    emptyNodeRowIndex = 1 + Math.floor(Math.random() * (NUMBER_OF_COLUMNS - 2));
+  }
   for (let column = 0; column < NUMBER_OF_COLUMNS; column++) {
-    (nodes[column] as HTMLElement).style.backgroundColor = WALL_COLOR;
+    if (emptyNodeRowIndex !== column) {
+      (nodes[column] as HTMLElement).style.backgroundColor = WALL_COLOR;
+    }
   }
 };
 
-const createBottomBorder = (nodes: NodeListOf<DataSetElement>) => {
+const createBottomBorder = (nodes: NodeListOf<DataSetElement>, createNodeOfType: string) => {
+  let emptyNodeRowIndex = -1;
+
+  if (createNodeOfType !== "") {
+    emptyNodeRowIndex = 1 + Math.floor(Math.random() * (NUMBER_OF_COLUMNS - 2));
+  }
   for (let column = 0; column < NUMBER_OF_COLUMNS; column++) {
-    (nodes[column + (NUMBER_OF_ROWS - 1) * NUMBER_OF_COLUMNS] as HTMLElement).style.backgroundColor = WALL_COLOR;
+    if (emptyNodeRowIndex !== column) {
+      (nodes[column + (NUMBER_OF_ROWS - 1) * NUMBER_OF_COLUMNS] as HTMLElement).style.backgroundColor = WALL_COLOR;
+    }
   }
 };
 
 const createMapBorders = () => {
   const nodes = document.querySelectorAll<DataSetElement>(".square");
+  const randomIndexArray = createRandomIndexArray(2, 4).sort((a, b) => a - b);
+  const borderCreationFunctions = [createLeftBorder, createTopBorder, createRightBorder, createBottomBorder];
 
-  createLeftBorder(nodes);
-  createRightBorder(nodes);
-  createTopBorder(nodes);
-  createBottomBorder(nodes);
+  borderCreationFunctions.forEach((borderCreationFunction, index: number) => {
+    const shouldCreateEmptyNode = index === randomIndexArray[0];
+    let shouldCreateNodeOfType = "";
+
+    if (shouldCreateEmptyNode) {
+      shouldCreateNodeOfType = randomIndexArray.length === 2 ? "start" : "end";
+      randomIndexArray.shift();
+    }
+
+    borderCreationFunction(nodes, shouldCreateNodeOfType);
+  });
 };
 
 export const createRandomWalls = () => {
   createMapBorders();
   // const nodes = document.querySelectorAll(".square");
   // const numberOfWalls = 900;
-  // const randomIndexArray = createRandomIndexArray(numberOfWalls);
-
   // randomIndexArray.forEach((index) => ((nodes[index] as HTMLElement).style.backgroundColor = WALL_COLOR));
 };
 
