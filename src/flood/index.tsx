@@ -152,9 +152,9 @@ const weighNeighborsRecursively = (nodes: NodeListOf<DataSetElement> = getAllNon
     setNodeAsVisited(node);
   });
   if (!wasEndNodeReached()) {
-    weighNeighborsRecursively();
+    setTimeout(weighNeighborsRecursively);
   } else {
-    colorFromNodeIndexRecursively(getEndNodeFromIndex());
+    setTimeout(() => colorFromNodeIndexRecursively(getEndNodeFromIndex()));
   }
 };
 
@@ -162,7 +162,6 @@ const run = () => {
   setUpStartNode();
   setUpEndNode();
   weighNeighborsRecursively();
-  return true;
 };
 
 export default run;

@@ -9,7 +9,7 @@ import TypeSelector from "./TypeSelector";
 const DIJKSTRA = "Dijkstra";
 const FLOOD = "Flood";
 
-const AlgortithmsHash: { [key: string]: () => boolean } = {
+const AlgortithmsHash: { [key: string]: () => void } = {
   [DIJKSTRA]: runDijkstra,
   [FLOOD]: runFlood,
 };
@@ -18,22 +18,20 @@ const App = () => {
   const [nodes] = useState<JSX.Element[]>(createNodes());
   const [selectedAlgorithm, setSelectedAlgorithm] = useState(FLOOD);
   const [isRunButtonDisabled, setIsRunButtonDisabled] = useState(false);
-  const [isResetButtonDisabled, setIsResetButtonDisabled] = useState(true);
 
-  useEffect(createRandomWalls, []);
+  const onCreateWallsButtonClick = () => {
+    resetMap();
+    createRandomWalls();
+  };
 
   const runSelectedAlgorithm = () => AlgortithmsHash[selectedAlgorithm]();
 
   const onRunClick = () => {
     setIsRunButtonDisabled(true);
-    const result = runSelectedAlgorithm();
-    if (result) {
-      setIsResetButtonDisabled(false);
-    }
+    runSelectedAlgorithm();
   };
 
   const resetMap = () => {
-    setIsResetButtonDisabled(true);
     setIsRunButtonDisabled(false);
     resetNodes();
   };
@@ -52,10 +50,13 @@ const App = () => {
         onChange={onSelectedAlgorithmTypeChange}
         selectedType={selectedAlgorithm}
       />
+      <button disabled={isRunButtonDisabled} onClick={onCreateWallsButtonClick}>
+        Add random walls
+      </button>
       <button disabled={isRunButtonDisabled} onClick={onRunClick}>
         Run
       </button>
-      <button disabled={isResetButtonDisabled} onClick={resetMap}>
+      <button disabled={!isRunButtonDisabled} onClick={resetMap}>
         Reset Map
       </button>
     </div>
