@@ -23,7 +23,7 @@
   animation-name: color_change;
   animation-duration: 1s;
   animation-direction: alternate;
-  background-color: yellow;
+  background-color: salmon;
 }
 
 @-webkit-keyframes color_change {
@@ -31,7 +31,7 @@
     background-color: white;
   }
   to {
-    background-color: yellow;
+    background-color: salmon;
   }
 }
 @-moz-keyframes color_change {
@@ -39,7 +39,7 @@
     background-color: white;
   }
   to {
-    background-color: yellow;
+    background-color: salmon;
   }
 }
 @-ms-keyframes color_change {
@@ -47,7 +47,7 @@
     background-color: white;
   }
   to {
-    background-color: yellow;
+    background-color: salmon;
   }
 }
 @-o-keyframes color_change {
@@ -55,7 +55,7 @@
     background-color: white;
   }
   to {
-    background-color: yellow;
+    background-color: salmon;
   }
 }
 @keyframes color_change {
@@ -63,6 +63,6 @@
     background-color: white;
   }
   to {
-    background-color: yellow;
+    background-color: salmon;
   }
 }

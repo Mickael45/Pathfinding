@@ -14,7 +14,7 @@ const defaultConfig = {
   NUMBER_OF_ROWS: 50,
   START_NODE_ID: "startNode",
   END_NODE_ID: "endNode",
-  START_NODE_COLOR: "green",
+  START_NODE_COLOR: "yellow",
   END_NODE_COLOR: "red",
   WALL_COLOR: "grey",
   PATH_COLOR: "blue",
