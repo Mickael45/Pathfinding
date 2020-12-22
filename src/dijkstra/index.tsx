@@ -168,9 +168,7 @@ const weighNeighborsRecursively = (node: DataSetElement | null = getLighterNonVi
   setWeightToDirectNeighbors(parseInt(index, 10), parseInt(weight, 10), distanceFromVisitedNode);
   setNodeAsVisited(node);
   if (!wasEndNodeReached()) {
-    setTimeout(() => {
-      weighNeighborsRecursively();
-    }, 0);
+    setTimeout(weighNeighborsRecursively);
   } else {
     colorFromNodeIndexRecursively(getEndNodeFromIndex());
   }

@@ -10,7 +10,7 @@ interface Config {
 }
 
 const defaultConfig = {
-  NUMBER_OF_COLUMNS: 75,
+  NUMBER_OF_COLUMNS: 90,
   NUMBER_OF_ROWS: 50,
   START_NODE_ID: "startNode",
   END_NODE_ID: "endNode",

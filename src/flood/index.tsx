@@ -154,7 +154,7 @@ const weighNeighborsRecursively = (nodes: NodeListOf<DataSetElement> = getAllNon
   if (!wasEndNodeReached()) {
     setTimeout(weighNeighborsRecursively);
   } else {
-    setTimeout(() => colorFromNodeIndexRecursively(getEndNodeFromIndex()));
+    colorFromNodeIndexRecursively(getEndNodeFromIndex());
   }
 };
 
