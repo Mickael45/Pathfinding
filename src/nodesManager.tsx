@@ -88,12 +88,46 @@ const createRandomIndexArray = (arrayLength: number) => {
   return indexArray;
 };
 
-export const createRandomWalls = () => {
-  const nodes = document.querySelectorAll(".square");
-  const numberOfWalls = 900;
-  const randomIndexArray = createRandomIndexArray(numberOfWalls);
+const createLeftBorder = (nodes: NodeListOf<DataSetElement>) => {
+  for (let row = 0; row < NUMBER_OF_ROWS; row++) {
+    (nodes[row * NUMBER_OF_COLUMNS] as HTMLElement).style.backgroundColor = WALL_COLOR;
+  }
+};
 
-  randomIndexArray.forEach((index) => ((nodes[index] as HTMLElement).style.backgroundColor = WALL_COLOR));
+const createRightBorder = (nodes: NodeListOf<DataSetElement>) => {
+  for (let row = 0; row < NUMBER_OF_ROWS; row++) {
+    (nodes[row * NUMBER_OF_COLUMNS + NUMBER_OF_COLUMNS - 1] as HTMLElement).style.backgroundColor = WALL_COLOR;
+  }
+};
+
+const createTopBorder = (nodes: NodeListOf<DataSetElement>) => {
+  for (let column = 0; column < NUMBER_OF_COLUMNS; column++) {
+    (nodes[column] as HTMLElement).style.backgroundColor = WALL_COLOR;
+  }
+};
+
+const createBottomBorder = (nodes: NodeListOf<DataSetElement>) => {
+  for (let column = 0; column < NUMBER_OF_COLUMNS; column++) {
+    (nodes[column + (NUMBER_OF_ROWS - 1) * NUMBER_OF_COLUMNS] as HTMLElement).style.backgroundColor = WALL_COLOR;
+  }
+};
+
+const createMapBorders = () => {
+  const nodes = document.querySelectorAll<DataSetElement>(".square");
+
+  createLeftBorder(nodes);
+  createRightBorder(nodes);
+  createTopBorder(nodes);
+  createBottomBorder(nodes);
+};
+
+export const createRandomWalls = () => {
+  createMapBorders();
+  // const nodes = document.querySelectorAll(".square");
+  // const numberOfWalls = 900;
+  // const randomIndexArray = createRandomIndexArray(numberOfWalls);
+
+  // randomIndexArray.forEach((index) => ((nodes[index] as HTMLElement).style.backgroundColor = WALL_COLOR));
 };
 
 const resetNode = (node: DataSetElement) => {
