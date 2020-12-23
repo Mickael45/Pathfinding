@@ -1,6 +1,6 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import type { ChangeEvent } from "react";
-import { createNodes, createRandomWalls, resetNodes } from "./nodesManager";
+import { createNodes, createRandomMaze, resetNodes } from "./nodesManager";
 import runDijkstra from "./dijkstra";
 import runFlood from "./flood";
 import "./App.css";
@@ -21,7 +21,7 @@ const App = () => {
 
   const onCreateWallsButtonClick = () => {
     resetMap();
-    createRandomWalls();
+    createRandomMaze();
   };
 
   const runSelectedAlgorithm = () => AlgortithmsHash[selectedAlgorithm]();
