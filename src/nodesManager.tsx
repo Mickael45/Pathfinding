@@ -1,6 +1,13 @@
 import { MouseEvent } from "react";
 import { getConfig } from "./config";
 
+interface Corners {
+  topRowIndex: number;
+  bottomRowIndex: number;
+  leftColumnIndex: number;
+  rightColumnIndex: number;
+}
+
 const {
   NUMBER_OF_COLUMNS,
   NUMBER_OF_ROWS,
@@ -78,6 +85,8 @@ const createNode = (index: number) => (
   />
 );
 
+const getNodes = () => document.querySelectorAll<DataSetElement>(".square");
+
 const createRandomIndexArray = (arrayLength: number, maxValue: number, toExclude: number[]) => {
   const indexArray = [];
 
@@ -137,6 +146,8 @@ const createMapBorders = (nodes: NodeListOf<DataSetElement>) => {
 
 const createNumberWithinRange = (min: number, max: number) => Math.floor(Math.random() * (max - min)) + min;
 
+const colorNodeInPink = (node: DataSetElement) => (node.style.backgroundColor = "pink");
+
 const getRandomVerticalWallNodeIndexWithinRange = (
   nodes: NodeListOf<DataSetElement>,
   minRowIndex: number,
@@ -151,7 +162,9 @@ const getRandomVerticalWallNodeIndexWithinRange = (
   while (
     (!randomRowIndex ||
       !isNodeAWall(nodes[randomRowIndex * NUMBER_OF_COLUMNS + minColumnIndex]) ||
-      !isNodeAWall(nodes[randomRowIndex * NUMBER_OF_COLUMNS + maxColumnIndex])) &&
+      !isNodeAWall(nodes[randomRowIndex * NUMBER_OF_COLUMNS + maxColumnIndex]) ||
+      isNodeAWall(nodes[randomRowIndex * (NUMBER_OF_COLUMNS - 1) + maxColumnIndex]) ||
+      isNodeAWall(nodes[randomRowIndex * (NUMBER_OF_COLUMNS + 1) + maxColumnIndex])) &&
     retries < maxRetries
   ) {
     randomRowIndex = createNumberWithinRange(minRowIndex, maxRowIndex);
@@ -175,27 +188,24 @@ const getRandomHorizontalWallNodeIndexWithinRange = (
   while (
     (!randomColumnIndex ||
       !isNodeAWall(nodes[minRowIndex * NUMBER_OF_COLUMNS + randomColumnIndex]) ||
-      !isNodeAWall(nodes[maxRowIndex * NUMBER_OF_COLUMNS + randomColumnIndex])) &&
+      !isNodeAWall(nodes[maxRowIndex * NUMBER_OF_COLUMNS + randomColumnIndex]) ||
+      isNodeAWall(nodes[minRowIndex * NUMBER_OF_COLUMNS + randomColumnIndex + 1]) ||
+      isNodeAWall(nodes[minRowIndex * NUMBER_OF_COLUMNS + randomColumnIndex - 1])) &&
     retries < maxRetries
   ) {
     randomColumnIndex = createNumberWithinRange(minColumnIndex, maxColumnIndex);
-    console.log("HORIZONTAL", minRowIndex, minRowIndex * NUMBER_OF_COLUMNS + randomColumnIndex);
     retries++;
   }
   return retries === maxRetries ? -1 : randomColumnIndex;
 };
 
-const createRandomlyPlacedVerticalWall = (
-  nodes: NodeListOf<DataSetElement>,
-  topRowIndex: number,
-  bottomRowIndex: number,
-  leftColumnIndex: number,
-  rightColumnIndex: number
-) => {
+const createRandomlyPlacedVerticalWall = (nodes: NodeListOf<DataSetElement>, corners: Corners) => {
+  const { topRowIndex, bottomRowIndex, leftColumnIndex, rightColumnIndex } = corners;
+
   const randomColumnIndex = getRandomHorizontalWallNodeIndexWithinRange(
     nodes,
-    leftColumnIndex + 2,
-    rightColumnIndex - 2,
+    leftColumnIndex + 1,
+    rightColumnIndex - 1,
     topRowIndex,
     bottomRowIndex
   );
@@ -213,17 +223,13 @@ const createRandomlyPlacedVerticalWall = (
   return randomColumnIndex;
 };
 
-const createRandomlyPlacedHorizontalWall = (
-  nodes: NodeListOf<DataSetElement>,
-  topRowIndex: number,
-  bottomRowIndex: number,
-  leftColumnIndex: number,
-  rightColumnIndex: number
-) => {
+const createRandomlyPlacedHorizontalWall = (nodes: NodeListOf<DataSetElement>, corners: Corners) => {
+  const { topRowIndex, bottomRowIndex, leftColumnIndex, rightColumnIndex } = corners;
+
   const randomRowIndex = getRandomVerticalWallNodeIndexWithinRange(
     nodes,
-    topRowIndex + 2,
-    bottomRowIndex - 2,
+    topRowIndex + 1,
+    bottomRowIndex - 1,
     leftColumnIndex,
     rightColumnIndex
   );
@@ -241,112 +247,63 @@ const createRandomlyPlacedHorizontalWall = (
   return randomRowIndex;
 };
 
-const getStartNodeIndex = () => {
-  const startNode = document.getElementById(START_NODE_ID);
+const isRandomIndexValid = (randomIndex: number | null) => randomIndex && randomIndex >= 0;
 
-  if (!startNode) {
-    return -1;
-  }
-  return parseInt(startNode.dataset.index || "", 10);
-};
-
-const getEndNodeIndex = () => {
-  const endNode = document.getElementById(END_NODE_ID);
-
-  if (!endNode) {
-    return -1;
-  }
-  return parseInt(endNode.dataset.index || "", 10);
-};
-
-const isNodeInLeftBorder = (nodeIndex: number) => !(nodeIndex % NUMBER_OF_COLUMNS);
-
-const isNodeInRightBorder = (nodeIndex: number) => !((nodeIndex + 1) % NUMBER_OF_COLUMNS);
-
-const isNodeInTopBorder = (nodeIndex: number) => nodeIndex > 0 && nodeIndex < NUMBER_OF_COLUMNS;
-
-const isNodeInBottomBorder = (nodeIndex: number) =>
-  nodeIndex > NUMBER_OF_COLUMNS * NUMBER_OF_ROWS - NUMBER_OF_COLUMNS && nodeIndex < NUMBER_OF_COLUMNS * NUMBER_OF_ROWS;
-
-const removeBlockingWalls = (nodes: NodeListOf<DataSetElement>, nodeIndex: number) => {
-  if (isNodeInBottomBorder(nodeIndex)) {
-    setNodeAsEmpty(nodes[nodeIndex - NUMBER_OF_COLUMNS]);
-  } else if (isNodeInTopBorder(nodeIndex)) {
-    setNodeAsEmpty(nodes[nodeIndex + NUMBER_OF_COLUMNS]);
-  } else if (isNodeInLeftBorder(nodeIndex)) {
-    setNodeAsEmpty(nodes[nodeIndex + 1]);
-  } else if (isNodeInRightBorder(nodeIndex)) {
-    setNodeAsEmpty(nodes[nodeIndex - 1]);
-  }
-};
-
-const randomlyCreateWallsUntilMapIsFilled = (
-  nodes: NodeListOf<DataSetElement>,
-  topRowIndex: number,
-  bottomRowIndex: number,
-  leftColumnIndex: number,
-  rightColumnIndex: number,
-  index: number
-) => {
+const randomlyCreateWalls = (nodes: NodeListOf<DataSetElement>, corners: Corners, index: number = 0) => {
+  const { topRowIndex, leftColumnIndex } = corners;
   let randomColumnIndex: number | null = null;
   let randomRowIndex: number | null = null;
 
-  if (bottomRowIndex - topRowIndex <= 3 || rightColumnIndex - leftColumnIndex <= 3) {
-    return;
-  }
-
   if (index % 2) {
-    randomRowIndex = createRandomlyPlacedHorizontalWall(
-      nodes,
-      topRowIndex,
-      bottomRowIndex,
-      leftColumnIndex,
-      rightColumnIndex
-    );
+    randomRowIndex = createRandomlyPlacedHorizontalWall(nodes, corners);
   } else {
-    randomColumnIndex = createRandomlyPlacedVerticalWall(
-      nodes,
-      topRowIndex,
-      bottomRowIndex,
-      leftColumnIndex,
-      rightColumnIndex
-    );
+    randomColumnIndex = createRandomlyPlacedVerticalWall(nodes, corners);
   }
 
-  if (randomColumnIndex === -1 || randomRowIndex === -1) {
+  if (!isRandomIndexValid(randomColumnIndex) && !isRandomIndexValid(randomRowIndex)) {
     return;
   }
 
-  setTimeout(() =>
-    randomlyCreateWallsUntilMapIsFilled(
-      nodes,
-      randomRowIndex || topRowIndex,
-      bottomRowIndex,
-      randomColumnIndex || leftColumnIndex,
-      rightColumnIndex,
-      index + 1
-    )
+  setTimeout(
+    () =>
+      randomlyCreateWalls(
+        nodes,
+        {
+          ...corners,
+          topRowIndex: randomRowIndex || topRowIndex,
+          leftColumnIndex: randomColumnIndex || leftColumnIndex,
+        },
+        index + 1
+      ),
+    index * 100
   );
-  setTimeout(() =>
-    randomlyCreateWallsUntilMapIsFilled(
-      nodes,
-      topRowIndex,
-      randomRowIndex || bottomRowIndex,
-      leftColumnIndex,
-      randomColumnIndex || rightColumnIndex,
-      index + 1
-    )
-  );
+  // setTimeout(
+  //   () =>
+  //     randomlyCreateWalls(
+  //       nodes,
+  //       {
+  //         ...corners,
+  //         bottomRowIndex: randomRowIndex || bottomRowIndex,
+  //         rightColumnIndex: randomColumnIndex || rightColumnIndex,
+  //       },
+  //       index + 1
+  //     ),
+  //   index * 100
+  // );
 };
 
 export const createRandomMaze = () => {
-  const nodes = document.querySelectorAll<DataSetElement>(".square");
+  const nodes = getNodes();
+  const corners = {
+    topRowIndex: 0,
+    bottomRowIndex: NUMBER_OF_ROWS - 1,
+    leftColumnIndex: 0,
+    rightColumnIndex: NUMBER_OF_COLUMNS - 1,
+  };
 
   createMapBorders(nodes);
   setStartAndEndNodes(Array.from(nodes));
-  randomlyCreateWallsUntilMapIsFilled(nodes, 0, NUMBER_OF_ROWS - 1, 0, NUMBER_OF_COLUMNS - 1, 0);
-  removeBlockingWalls(nodes, getStartNodeIndex());
-  removeBlockingWalls(nodes, getEndNodeIndex());
+  randomlyCreateWalls(nodes, corners);
 };
 
 const resetNode = (node: DataSetElement) => {
@@ -359,11 +316,7 @@ const resetNode = (node: DataSetElement) => {
   node.style.backgroundColor = "";
 };
 
-export const resetNodes = () => {
-  const nodes = document.querySelectorAll<DataSetElement>(".square");
-
-  nodes.forEach(resetNode);
-};
+export const resetNodes = () => getNodes().forEach(resetNode);
 
 export const createNodes = () => {
   const nodes = [];
