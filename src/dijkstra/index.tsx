@@ -11,7 +11,6 @@ interface NodeIndexCalculator {
 }
 
 const giveWeightToNode = (weight: number, from: number, node: DataSetElement) => {
-  node.innerHTML = weight.toString();
   node.dataset.weight = weight.toString();
   node.dataset.from = from.toString();
   node.dataset.visited = "false";

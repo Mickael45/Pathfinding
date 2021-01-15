@@ -1,5 +1,6 @@
 .App {
   display: grid;
+  padding-top: 10px;
 }
 
 .App > :only-child {
@@ -7,7 +8,7 @@
   width: 1828px;
   justify-self: center;
   grid-template-columns: repeat(90, auto);
-  grid-gap: 2px;
+  row-gap: 2px;
 }
 
 .square {
@@ -16,13 +17,11 @@
   width: 15px;
   text-align: center;
   font-size: 7px;
+  border-radius: 50%;
   border: 1px solid #a0a0a0;
 }
 
 .visited {
-  animation-name: color_change;
-  animation-duration: 1s;
-  animation-direction: alternate;
   background-color: salmon;
 }
 

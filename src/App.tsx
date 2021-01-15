@@ -15,16 +15,18 @@ const AlgortithmsHash: { [key: string]: () => void } = {
 };
 
 const App = () => {
-  const [nodes] = useState<JSX.Element[]>(createNodes());
+  const [nodes] = useState<JSX.Element[]>(createNodes);
   const [selectedAlgorithm, setSelectedAlgorithm] = useState(FLOOD);
-  const [isRunButtonDisabled, setIsRunButtonDisabled] = useState(false);
-
-  const onCreateWallsButtonClick = () => {
-    resetMap();
-    createRandomMaze();
-  };
+  const [isRunButtonDisabled, setIsRunButtonDisabled] = useState(true);
+  const [isResetButtonDisabled, setIsResetButtonDisabled] = useState(true);
 
   const runSelectedAlgorithm = () => AlgortithmsHash[selectedAlgorithm]();
+
+  const onCreateMazeButtonClick = () => {
+    setIsResetButtonDisabled(false);
+    setIsRunButtonDisabled(false);
+    createRandomMaze();
+  };
 
   const onRunClick = () => {
     setIsRunButtonDisabled(true);
@@ -32,6 +34,7 @@ const App = () => {
   };
 
   const resetMap = () => {
+    setIsResetButtonDisabled(true);
     setIsRunButtonDisabled(false);
     resetNodes();
   };
@@ -50,13 +53,11 @@ const App = () => {
         onChange={onSelectedAlgorithmTypeChange}
         selectedType={selectedAlgorithm}
       />
-      <button disabled={isRunButtonDisabled} onClick={onCreateWallsButtonClick}>
-        Add random walls
-      </button>
+      <button onClick={onCreateMazeButtonClick}>Create maze</button>
       <button disabled={isRunButtonDisabled} onClick={onRunClick}>
         Run
       </button>
-      <button disabled={!isRunButtonDisabled} onClick={resetMap}>
+      <button disabled={isResetButtonDisabled} onClick={resetMap}>
         Reset Map
       </button>
     </div>

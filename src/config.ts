@@ -9,7 +9,7 @@ interface Config {
   PATH_COLOR: string;
 }
 
-const defaultConfig = {
+const defaultConfig = Object.freeze({
   NUMBER_OF_COLUMNS: 90,
   NUMBER_OF_ROWS: 50,
   START_NODE_ID: "startNode",
@@ -18,7 +18,7 @@ const defaultConfig = {
   END_NODE_COLOR: "red",
   WALL_COLOR: "grey",
   PATH_COLOR: "blue",
-};
+});
 
 let config = { ...defaultConfig };
 
