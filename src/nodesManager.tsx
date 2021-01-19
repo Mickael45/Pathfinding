@@ -1,5 +1,6 @@
 import { MouseEvent } from "react";
 import { getConfig } from "./config";
+import { recursiveDivision } from "./mazeAlgorithms";
 
 const {
   NUMBER_OF_COLUMNS,
@@ -50,8 +51,6 @@ const onClick = (e: MouseEvent) => {
   }
   return isNodeEmpty(node) ? setNodeAsWall(node) : setNodeAsEmpty(node);
 };
-
-const isNodeAWall = (node: DataSetElement) => node.style.backgroundColor === WALL_COLOR;
 
 const isMouseDown = () => mouseState === DOWN_STATE;
 
@@ -142,183 +141,13 @@ const createMapBorders = (nodes: NodeListOf<DataSetElement>) => {
 const createNumberWithinRange = (min: number, max: number, isMaxIncluded: boolean = false) =>
   Math.floor(Math.random() * ((isMaxIncluded ? max + 1 : max) - min)) + min;
 
-const createLeftWall = (nodes: NodeListOf<DataSetElement>, wallIndex: number, x: number, y: number, height: number) => {
-  const nextRoomWidth = wallIndex - x;
-  const isNextWallHorizontal = nextRoomWidth <= height;
-
-  createRandomWall(nodes, x, y, nextRoomWidth, height, isNextWallHorizontal);
-};
-
-const areBothExtremitiesEmptyNodes = (startIndex: number, endIndex: number) => {
-  const nodes = getNodes();
-
-  return !isNodeAWall(nodes[startIndex]) && !isNodeAWall(nodes[endIndex]);
-};
-
-const generateVerticalWallIndex = (min: number, max: number, y: number, height: number) => {
-  const wallIndex = createNumberWithinRange(min, max);
-  const startNodeIndex = (y - 1) * NUMBER_OF_COLUMNS + wallIndex;
-  const endNodeIndex = (y + height) * NUMBER_OF_COLUMNS + wallIndex;
-
-  const generateAnotherWallIndex = () => (max - min > 0 ? createRandomIndexArray(1, min, max, [wallIndex])[0] : -1);
-
-  return areBothExtremitiesEmptyNodes(startNodeIndex, endNodeIndex) ? generateAnotherWallIndex() : wallIndex;
-};
-
-const createRightWall = (
-  nodes: NodeListOf<DataSetElement>,
-  wallIndex: number,
-  x: number,
-  y: number,
-  height: number,
-  width: number
-) => {
-  const nextRoomWidth = x + width - (wallIndex + 1);
-  const isNextWallHorizontal = nextRoomWidth <= height;
-
-  createRandomWall(nodes, wallIndex + 1, y, nextRoomWidth, height, isNextWallHorizontal);
-};
-
-const createRandomlyPlacedVerticalWall = (
-  nodes: NodeListOf<DataSetElement>,
-  x: number,
-  y: number,
-  width: number,
-  height: number
-) => {
-  const min = x + 1;
-  const max = x + width - 2;
-
-  if (min > max) {
-    return -1;
-  }
-
-  const wallIndex = generateVerticalWallIndex(min, max, y, height);
-  let pathIndex = createNumberWithinRange(y, y + height);
-
-  if (wallIndex === -1) {
-    return wallIndex;
-  }
-
-  if (!isNodeAWall(nodes[(y + height) * NUMBER_OF_COLUMNS + wallIndex])) {
-    pathIndex = y + height - 1;
-  } else if (!isNodeAWall(nodes[(y - 1) * NUMBER_OF_COLUMNS + wallIndex])) {
-    pathIndex = y;
-  }
-
-  for (let row = y; row < y + height; row++) {
-    if (row !== pathIndex) {
-      setNodeAsWall(nodes[row * NUMBER_OF_COLUMNS + wallIndex]);
-    }
-  }
-  return wallIndex;
-};
-
-const createTopWall = (nodes: NodeListOf<DataSetElement>, wallIndex: number, x: number, y: number, width: number) => {
-  const nextRoomHeight = wallIndex - y;
-  const isNextWallHorizontal = width <= nextRoomHeight;
-
-  createRandomWall(nodes, x, y, width, nextRoomHeight, isNextWallHorizontal);
-};
-
-const createBottomWall = (
-  nodes: NodeListOf<DataSetElement>,
-  wallIndex: number,
-  x: number,
-  y: number,
-  width: number,
-  height: number
-) => {
-  const nextRoomHeight = y + height - (wallIndex + 1);
-  const isNextWallHorizontal = width <= nextRoomHeight;
-
-  createRandomWall(nodes, x, wallIndex + 1, width, nextRoomHeight, isNextWallHorizontal);
-};
-
-const generateHorizontalWallIndex = (min: number, max: number, x: number, width: number) => {
-  const wallIndex = createNumberWithinRange(min, max);
-  const startNodeIndex = x - 1 + NUMBER_OF_COLUMNS * wallIndex;
-  const endNodeIndex = x + width + NUMBER_OF_COLUMNS * wallIndex;
-
-  const generateAnotherWallIndex = () => (max - min > 0 ? createRandomIndexArray(1, min, max, [wallIndex])[0] : -1);
-
-  return areBothExtremitiesEmptyNodes(startNodeIndex, endNodeIndex) ? generateAnotherWallIndex() : wallIndex;
-};
-
-const createRandomlyPlacedHorizontalWall = (
-  nodes: NodeListOf<DataSetElement>,
-  x: number,
-  y: number,
-  width: number,
-  height: number
-) => {
-  const min = y + 1;
-  const max = y + height - 2;
-
-  if (min > max) {
-    return -1;
-  }
-
-  const wallIndex = generateHorizontalWallIndex(min, max, x, width);
-  let pathIndex = createNumberWithinRange(x, x + width);
-
-  if (wallIndex === -1) {
-    return wallIndex;
-  }
-
-  if (!isNodeAWall(nodes[x + width + NUMBER_OF_COLUMNS * wallIndex])) {
-    pathIndex = x + width - 1;
-  } else if (!isNodeAWall(nodes[x - 1 + NUMBER_OF_COLUMNS * wallIndex])) {
-    pathIndex = x;
-  }
-
-  for (let column = x; column < x + width; column++) {
-    if (column !== pathIndex) {
-      setNodeAsWall(nodes[column + NUMBER_OF_COLUMNS * wallIndex]);
-    }
-  }
-  return wallIndex;
-};
-
-const createRandomWall = (
-  nodes: NodeListOf<DataSetElement>,
-  x: number,
-  y: number,
-  width: number,
-  height: number,
-  isHorizontal: boolean
-) => {
-  if (width < 2 || height < 2) {
-    return;
-  }
-
-  if (isHorizontal) {
-    const wallIndex = createRandomlyPlacedHorizontalWall(nodes, x, y, width, height);
-
-    if (wallIndex === -1) {
-      return;
-    }
-    createTopWall(nodes, wallIndex, x, y, width);
-    createBottomWall(nodes, wallIndex, x, y, width, height);
-  } else {
-    const wallIndex = createRandomlyPlacedVerticalWall(nodes, x, y, width, height);
-
-    if (wallIndex === -1) {
-      return;
-    }
-
-    createLeftWall(nodes, wallIndex, x, y, height);
-    createRightWall(nodes, wallIndex, x, y, height, width);
-  }
-};
-
 export const createRandomMaze = () => {
   resetNodes();
   const nodes = getNodes();
 
   createMapBorders(nodes);
   setStartAndEndNodes(Array.from(nodes));
-  createRandomWall(nodes, 1, 1, NUMBER_OF_COLUMNS - 2, NUMBER_OF_ROWS - 2, NUMBER_OF_COLUMNS <= NUMBER_OF_ROWS);
+  recursiveDivision(nodes);
 };
 
 const resetNode = (node: DataSetElement) => {
