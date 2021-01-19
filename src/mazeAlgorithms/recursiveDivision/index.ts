@@ -1,24 +1,6 @@
 import { getConfig } from "../../config";
 
-const {
-  NUMBER_OF_COLUMNS,
-  NUMBER_OF_ROWS,
-  START_NODE_ID,
-  END_NODE_ID,
-  WALL_COLOR,
-  START_NODE_COLOR,
-  END_NODE_COLOR,
-} = getConfig();
-
-const setNodeAsStart = (node: DataSetElement) => {
-  node.id = START_NODE_ID;
-  node.style.backgroundColor = START_NODE_COLOR;
-};
-
-const setNodeAsEnd = (node: DataSetElement) => {
-  node.id = END_NODE_ID;
-  node.style.backgroundColor = END_NODE_COLOR;
-};
+const { NUMBER_OF_COLUMNS, NUMBER_OF_ROWS, WALL_COLOR } = getConfig();
 
 const setNodeAsWall = (node: DataSetElement) => {
   node.id = "";
@@ -41,51 +23,6 @@ const createRandomIndexArray = (arrayLength: number, min: number, max: number, t
   }
 
   return indexArray;
-};
-
-const createLeftBorder = (nodes: NodeListOf<DataSetElement>) => {
-  for (let row = 0; row < NUMBER_OF_ROWS; row++) {
-    setNodeAsWall(nodes[row * NUMBER_OF_COLUMNS]);
-  }
-};
-
-const createRightBorder = (nodes: NodeListOf<DataSetElement>) => {
-  for (let row = 0; row < NUMBER_OF_ROWS; row++) {
-    setNodeAsWall(nodes[row * NUMBER_OF_COLUMNS + NUMBER_OF_COLUMNS - 1]);
-  }
-};
-
-const createTopBorder = (nodes: NodeListOf<DataSetElement>) => {
-  for (let column = 0; column < NUMBER_OF_COLUMNS; column++) {
-    setNodeAsWall(nodes[column]);
-  }
-};
-
-const createBottomBorder = (nodes: NodeListOf<DataSetElement>) => {
-  for (let column = 0; column < NUMBER_OF_COLUMNS; column++) {
-    setNodeAsWall(nodes[column + (NUMBER_OF_ROWS - 1) * NUMBER_OF_COLUMNS]);
-  }
-};
-
-const setStartAndEndNodes = (nodes: DataSetElement[]) => {
-  const wallNodes = nodes.filter((node) => node.style.backgroundColor === WALL_COLOR);
-  const fourCornersIndex = [
-    0,
-    NUMBER_OF_COLUMNS - 1,
-    NUMBER_OF_ROWS * 2 + NUMBER_OF_COLUMNS - 4,
-    NUMBER_OF_ROWS * 2 + NUMBER_OF_COLUMNS * 2 - 5,
-  ];
-  const randomIndexArray = createRandomIndexArray(2, 0, wallNodes.length - 1, fourCornersIndex);
-
-  setNodeAsStart(wallNodes[randomIndexArray[0]]);
-  setNodeAsEnd(wallNodes[randomIndexArray[1]]);
-};
-
-const createMapBorders = (nodes: NodeListOf<DataSetElement>) => {
-  createLeftBorder(nodes);
-  createTopBorder(nodes);
-  createRightBorder(nodes);
-  createBottomBorder(nodes);
 };
 
 const createNumberWithinRange = (min: number, max: number, isMaxIncluded: boolean = false) =>
