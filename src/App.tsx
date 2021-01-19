@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import type { ChangeEvent } from "react";
 import { createNodes, createRandomMaze, resetNodes } from "./nodesManager";
 import runDijkstra from "./dijkstra";
@@ -9,18 +9,28 @@ import TypeSelector from "./TypeSelector";
 const DIJKSTRA = "Dijkstra";
 const FLOOD = "Flood";
 
-const AlgortithmsHash: { [key: string]: () => void } = {
+const AUTOMATIC = "Automatic";
+const MANUAL = "Manual";
+
+const PathfindingAlgortithmsHash: { [key: string]: () => void } = {
   [DIJKSTRA]: runDijkstra,
   [FLOOD]: runFlood,
 };
 
+const MazeGenerationModesHash: { [key: string]: () => void } = {
+  [AUTOMATIC]: runDijkstra,
+  [MANUAL]: runFlood,
+};
+
 const App = () => {
   const [nodes] = useState<JSX.Element[]>(createNodes);
-  const [selectedAlgorithm, setSelectedAlgorithm] = useState(FLOOD);
+  const [selectedPathfindingAlgorithm, setSelectedPathfindingAlgorithm] = useState(FLOOD);
+  const [selectedMazeGenerationMode, setSelectedMazeGenerationMode] = useState(AUTOMATIC);
+  const [showGenerateMazeButton, setShowGenerateMazeButton] = useState(selectedMazeGenerationMode === AUTOMATIC);
   const [isRunButtonDisabled, setIsRunButtonDisabled] = useState(true);
   const [isResetButtonDisabled, setIsResetButtonDisabled] = useState(true);
 
-  const runSelectedAlgorithm = () => AlgortithmsHash[selectedAlgorithm]();
+  const runSelectedPathfindingAlgorithm = () => PathfindingAlgortithmsHash[selectedPathfindingAlgorithm]();
 
   const onCreateMazeButtonClick = () => {
     setIsResetButtonDisabled(false);
@@ -30,7 +40,7 @@ const App = () => {
 
   const onRunClick = () => {
     setIsRunButtonDisabled(true);
-    runSelectedAlgorithm();
+    runSelectedPathfindingAlgorithm();
   };
 
   const resetMap = () => {
@@ -39,26 +49,43 @@ const App = () => {
     resetNodes();
   };
 
-  const onSelectedAlgorithmTypeChange = (e: ChangeEvent<HTMLInputElement>) => setSelectedAlgorithm(e.target.value);
+  const onSelectedPathfindingAlgorithmTypeChange = (e: ChangeEvent<HTMLInputElement>) =>
+    setSelectedPathfindingAlgorithm(e.target.value);
+
+  const onSelectedMazeGenerationModeTypeChange = (e: ChangeEvent<HTMLInputElement>) =>
+    setSelectedMazeGenerationMode(e.target.value);
+
+  useEffect(() => setShowGenerateMazeButton(selectedMazeGenerationMode === AUTOMATIC), [selectedMazeGenerationMode]);
+
+  const renderCreateMazeButton = () =>
+    showGenerateMazeButton ? <button onClick={onCreateMazeButtonClick}>Generate Random Maze</button> : null;
 
   return (
     <div>
       <div className="App">
         <div>{nodes}</div>
       </div>
-      <p>Select algorithm to run:</p>
 
       <TypeSelector
+        label="Select pathfinding algorithm to run:"
         types={[DIJKSTRA, FLOOD]}
-        onChange={onSelectedAlgorithmTypeChange}
-        selectedType={selectedAlgorithm}
+        onChange={onSelectedPathfindingAlgorithmTypeChange}
+        selectedType={selectedPathfindingAlgorithm}
       />
-      <button onClick={onCreateMazeButtonClick}>Create maze</button>
+
+      <TypeSelector
+        label="Select maze generation mode:"
+        types={[AUTOMATIC, MANUAL]}
+        onChange={onSelectedMazeGenerationModeTypeChange}
+        selectedType={selectedMazeGenerationMode}
+      />
+
+      {renderCreateMazeButton()}
       <button disabled={isRunButtonDisabled} onClick={onRunClick}>
         Run
       </button>
       <button disabled={isResetButtonDisabled} onClick={resetMap}>
-        Reset Map
+        Reset Maze
       </button>
     </div>
   );
